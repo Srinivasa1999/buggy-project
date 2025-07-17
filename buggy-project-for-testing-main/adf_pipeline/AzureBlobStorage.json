@@ -7,7 +7,7 @@
         "typeProperties": {
             "connectionString": "DefaultEndpointsProtocol=https;AccountName=storageaccountname;AccountKey=storageaccountkey123+ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789;EndpointSuffix=core.windows.net",
             "sasToken": {
-                "type": "SecureString",
+                "type": "SecureStringdddddddddddddddddxxx",
                 "value": "?sv=2020-08-04&ss=bfqt&srt=c&sp=rwdlacupitfx&se=2023-11-27T18:09:38Z&st=2023-03-01T11:09:38Z&spr=https&sig=abcdefghijklmnopqrstuvwxyz0123456789"
             }
         },
