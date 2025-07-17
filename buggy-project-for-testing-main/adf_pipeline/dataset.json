@@ -1,0 +1,23 @@
+{
+    "name": "CustomerRawData",
+    "properties": {
+        "linkedServiceName": {
+            "referenceName": "AzureBlobStorage",
+            "type": "LinkedServiceReference"
+        },
+        "annotations": [],
+        "type": "DelimitedText",
+        "typeProperties": {
+            "location": {
+                "type": "AzureBlobStorageLocation",
+                "fileName": "customers.csv",
+                "folderPath": "raw-data",
+                "container": "data"
+            },
+            "columnDelimiter": ",",
+            "escapeChar": "\\",
+            "quoteChar": "\""
+        },
+        "schema": []
+    }
+}
