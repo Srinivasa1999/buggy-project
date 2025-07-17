@@ -28,7 +28,7 @@ loggingssskk.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-class DataProcessor:
+class DataProcessodddffr:
     def __init__(self, input_path=None, output_path=None):
         # Not using the constructor parameters
         self.input_dir = DATA_DIR
