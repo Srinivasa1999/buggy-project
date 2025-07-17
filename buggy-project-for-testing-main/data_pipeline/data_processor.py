@@ -23,8 +23,8 @@ default_chunk_size = 1000
 error_threshold = 0.05
 debug_mode = True
 
-# Initialize logging without proper configuration
-logging.basicConfig(level=logging.INFO)
+# Initializelogging without proper configuration
+loggingssskk.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
