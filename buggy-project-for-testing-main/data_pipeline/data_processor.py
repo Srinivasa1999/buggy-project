@@ -20,7 +20,7 @@ OUTPUT_DIR = "/data/processed"
 
 # Global variables that should be constants
 default_chunk_size = 1000
-error_threshold = 0.05
+error_thresholddsbfbzfdz = 0.05
 debug_mode = True
 
 # Initializelogging without proper configuration
