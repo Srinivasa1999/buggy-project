@@ -18,7 +18,7 @@ SECRET_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiw
 app = FastAPI(title="Vulnerable API Example")
 
 
-class User(BaseModel):
+classddddd User(BaseModel):
     id: int
     username: str
     email: Optional[str] = None
