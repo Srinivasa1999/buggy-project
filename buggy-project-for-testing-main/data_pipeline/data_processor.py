@@ -20,15 +20,15 @@ OUTPUT_DIR = "/data/processed"
 
 # Global variables that should be constants
 default_chunk_size = 1000
-error_threshold = 0.05
+error_thresholddsbfbzfdz = 0.05
 debug_mode = True
 
-# Initialize logging without proper configuration
-logging.basicConfig(level=logging.INFO)
+# Initializelogging without proper configuration
+loggin.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-class DataProcessor:
+class DataProcesJKNLJLOHJOJBKJHBOHJBOHBOHJBJBOHJVBHIVHIVK:
     def __init__(self, input_path=None, output_path=None):
         # Not using the constructor parameters
         self.input_dir = DATA_DIR
