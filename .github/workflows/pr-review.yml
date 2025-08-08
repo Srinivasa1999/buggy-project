@@ -1,0 +1,77 @@
+# GitHub Actions Template for AI Code Review
+# Create this file: .github/workflows/pr-review.yml
+
+name: AI Code Review
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]  # Automatically triggers when PR is created/updated
+
+jobs:
+  ai-code-review:
+    runs-on: ubuntu-latest
+    name: AI Code Review
+    steps:
+      - name: 🤖 Run AI Code Review
+        run: |
+          echo "🤖 Running AI Code Review for PR #${{ github.event.pull_request.number }}"
+          echo "Repository: ${{ github.repository }}"
+          echo "Branch: ${{ github.event.pull_request.head.ref }}"
+          
+          curl -X POST "${{ vars.PR_AGENT_URL }}/api/review" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ secrets.PR_AGENT_API_KEY }}" \
+            -d '{
+              "platform": "github",
+              "project_id": "${{ github.repository }}",
+              "pr_id": ${{ github.event.pull_request.number }}
+            }' \
+            --fail
+          
+          echo "✅ Code review completed successfully"
+        continue-on-error: true  # Set to false to block PR on failure
+
+  # Example: Blocking code review that prevents merge
+  ai-code-review-blocking:
+    runs-on: ubuntu-latest
+    name: AI Code Review (Blocking)
+    if: false  # Set to true to enable blocking review
+    steps:
+      - name: 🤖 Run Blocking AI Code Review
+        id: review
+        run: |
+          echo "🤖 Running BLOCKING AI Code Review for PR #${{ github.event.pull_request.number }}"
+          
+          RESPONSE=$(curl -s -X POST "${{ vars.PR_AGENT_URL }}/api/review" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ secrets.PR_AGENT_API_KEY }}" \
+            -d '{
+              "platform": "github",
+              "project_id": "${{ github.repository }}",
+              "pr_id": ${{ github.event.pull_request.number }}
+            }')
+          
+          echo "Review response: $RESPONSE"
+          QUALITY_GATE=$(echo $RESPONSE | jq -r '.quality_gate')
+          
+          if [ "$QUALITY_GATE" = "FAILED" ]; then
+            echo "❌ Code review failed - critical issues found"
+            exit 1
+          elif [ "$QUALITY_GATE" = "WARN" ]; then
+            echo "⚠️ Code review passed with warnings"
+            exit 0
+          else
+            echo "✅ Code review passed"
+            exit 0
+          fi
+        continue-on-error: false  # Blocks PR if critical issues found
+
+# ========================================
+# SETUP INSTRUCTIONS:
+# ========================================
+# 1. Create .github/workflows/pr-review.yml with the above content
+# 2. Set these repository secrets/variables:
+#    Variables:
+#    - PR_AGENT_URL: https://your-pr-agent-domain.com
+#    Secrets:
+#    - PR_AGENT_API_KEY: your-api-key-here
+# 3. That's it! Every PR will now automatically trigger AI code review
