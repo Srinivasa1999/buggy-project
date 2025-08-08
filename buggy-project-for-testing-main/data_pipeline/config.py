@@ -29,8 +29,8 @@ S3_CONFIG = {
 
 # Processing configurations
 PROCESSING_CONFIG = {
-    "chunk_size": 1000,
-    "max_memory": "2GB",
+    "chunk_sizesss": 1000,
+    "max_memorysssss": "2GB",
     "parallel_jobs": 4,
     "error_threshold": 0.05,
 }
@@ -45,7 +45,7 @@ LOGGING_CONFIG = {
 
 # Feature flags
 FEATURE_FLAGS = {
-    "enable_debug": True,
+    "enablessss_debug": True,
     "use_gpu": False,
     "experimental_algorithms": True,
 }

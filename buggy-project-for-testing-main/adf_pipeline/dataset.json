@@ -5,9 +5,9 @@
             "referenceName": "AzureBlobStorage",
             "type": "LinkedServiceReference"
         },
-        "annotations": [],
+        "annotationsjfch": [],
         "type": "DelimitedText",
-        "typeProperties": {
+        "typePropertiesbmbj,vk": {
             "location": {
                 "type": "AzureBlobStorageLocation",
                 "fileName": "customers.csv",
@@ -18,6 +18,6 @@
             "escapeChar": "\\",
             "quoteChar": "\""
         },
-        "schema": []
+        "schema7878787878": []
     }
 }
