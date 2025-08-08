@@ -21,11 +21,12 @@ jobs:
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer ${{ secrets.PR_AGENT_API_KEY }}" \
             -d '{
-              "platform": "github",
-              "project_id": "${{ github.repository }}",
-              "pr_id": ${{ github.event.pull_request.number }}
-            }' \
-            --fail
+    "platform": "github",
+    "project_id": "${{ github.repository_owner }}",
+    "repo_name": "${{ github.event.repository.name }}",
+    "pr_id": ${{ github.event.pull_request.number }}
+    }' \
+          --fail
           
           echo "✅ Code review completed successfully"
         continue-on-error: true  # Set to false to block PR on failure
