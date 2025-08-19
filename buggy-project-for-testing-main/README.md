@@ -4,6 +4,10 @@ This directory contains sample projects with various code quality issues, securi
 
 ## Projects Overview
 
+
+
+
+
 ### 1. Vulnerable API (`vulnerable_api/svas asc 000qdn  kjlcn  ljbkj  wbd`)
 
 A Python FastAPI application with multiple security vulnerabilities including:
